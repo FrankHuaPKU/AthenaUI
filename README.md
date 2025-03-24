@@ -10,26 +10,6 @@ AthenaUI是为Athena++开发的一套终端用户界面(TUI)框架，旨在简�
 - **跨平台兼容**：优先支持Slurm超算平台，同时兼容本地开发环境
 - **可视化集成**：提供一键式数据可视化和分析功能
 
-## 目录结构
-
-```
-AthenaUI/
-├── user/                  # 用户配置目录
-│   ├── platforms/         # 平台模板
-│   ├── example.user       # 用户配置示例
-│   └── current.user       # 当前活跃配置
-├── src/                   # 源代码目录
-│   ├── pgen/              # 问题生成器
-│   ├── post/              # 后处理工具
-│   └── commands/          # 命令入口
-├── test/                  # 测试目录
-│   ├── dependency_test.sh # 环境验证脚本
-│   └── test_output/       # 测试输出目录
-├── references/            # 开发参考资料
-├── config.sh              # 配置脚本
-├── init.sh                # 初始化脚本
-└── README.md              # 项目文档
-```
 
 ## 使用方法
 
