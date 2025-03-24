@@ -1,2 +1,70 @@
-# AthenaUI
-A user-friendly TUI (Terminal User Interface) for Athena++, an astrophysical (GR)MHD code
+# AthenaUI: Athena++的终端用户界面框架
+
+## 项目概述
+
+AthenaUI是为Athena++开发的一套终端用户界面(TUI)框架，旨在简化Athena++的使用流程，使研究人员能够通过直观的界面进行模拟配置、运行和后处理，而无需直接与复杂的命令行或源代码交互。
+
+### 设计理念
+
+- **简化操作**：通过TUI界面替代复杂的命令行操作
+- **跨平台兼容**：优先支持Slurm超算平台，同时兼容本地开发环境
+- **可视化集成**：提供一键式数据可视化和分析功能
+
+## 目录结构
+
+```
+AthenaUI/
+├── user/                  # 用户配置目录
+│   ├── platforms/         # 平台模板
+│   ├── example.user       # 用户配置示例
+│   └── current.user       # 当前活跃配置
+├── src/                   # 源代码目录
+│   ├── pgen/              # 问题生成器
+│   ├── post/              # 后处理工具
+│   └── commands/          # 命令入口
+├── test/                  # 测试目录
+│   ├── dependency_test.sh # 环境验证脚本
+│   └── test_output/       # 测试输出目录
+├── references/            # 开发参考资料
+├── config.sh              # 配置脚本
+├── init.sh                # 初始化脚本
+└── README.md              # 项目文档
+```
+
+## 使用方法
+
+### 首次配置
+
+1. 运行配置脚本：
+   ```bash
+   ./config.sh
+   ```
+2. 根据提示填写必要信息
+
+### 日常使用
+
+1. 初始化环境：
+   ```bash
+   source init.sh
+   ```
+2. 使用可用命令：
+   - `run`: 配置新的模拟
+   - `slc`: 生成2D切片图
+   - `spc`: 绘制湍流谱
+
+### 快捷方式
+
+可以将以下别名添加到您的`~/.bashrc`文件中，实现从任意目录启动AthenaUI：
+
+```bash
+alias hyy='cd $ATHENAUI_PATH && source init.sh'
+```
+
+## 版本信息
+
+- **当前版本**: v0.0 (框架搭建)
+- **下一版本**: v0.1 (环境验证)
+
+## 贡献与支持
+
+如有问题或建议，请联系开发团队。 

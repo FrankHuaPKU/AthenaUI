@@ -1,0 +1,9 @@
+# 北京超算中心平台配置
+# 该文件定义了在北京超算中心Slurm环境下运行Athena++所需的配置
+
+SLURM_FLAG    = ON                  # 启用Slurm
+
+# 模块加载命令
+MPI_LOAD      = "module load mpich/4.1.2-ib"
+HDF5_LOAD     = "module load hdf5/1.10.4-parallel-icc18"
+PYTHON_LOAD   = "module load anaconda/3-Python3.7.4-fenggl" 

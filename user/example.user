@@ -1,0 +1,16 @@
+# AthenaUI 用户配置示例文件
+# 复制此文件并修改为 current.user 以启用您的个人配置
+
+# Athena++路径配置
+ATHENA_PATH   = /public1/home/sc51248/hyy/Athena++/athena      # Athena++绝对路径
+ATHENAUI_PATH = /public1/home/sc51248/hyy/Athena++/AthenaUI    # AthenaUI绝对路径
+
+# 计算平台设置
+SLURM_FLAG    = ON                              # ON=使用Slurm，OFF=本地运行
+USERNAME      = hyy                             # 用户名/作业名称
+
+# 环境模块加载命令
+# 根据您的计算平台修改这些命令
+MPI_LOAD      = "module load mpich/4.1.2-ib"
+HDF5_LOAD     = "module load hdf5/1.10.4-parallel-icc18"
+PYTHON_LOAD   = "module load anaconda/3-Python3.7.4-fenggl"

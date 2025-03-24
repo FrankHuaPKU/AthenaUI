@@ -1,0 +1,10 @@
+# macOS本地开发平台配置
+# 该文件定义了在macOS本地环境下运行Athena++所需的配置
+
+SLURM_FLAG    = OFF                 # 禁用Slurm
+USERNAME      = hyy                 # 用户名
+
+# macOS环境下通常已安装所需工具，如需特定版本请取消以下注释并修改
+# MPI_LOAD      = ""
+# HDF5_LOAD     = ""
+# PYTHON_LOAD   = "" 

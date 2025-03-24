@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# AthenaUI - run命令
+# 用于配置和运行Athena++模拟
+#
+
+echo "AthenaUI: run命令 - v0.0 (开发中)"
+echo "该命令将在v0.2版本中实现。"
+echo "" 

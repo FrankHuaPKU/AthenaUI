@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# 参考信息
+
+- 写任何代码时都要参考references目录中的内容
+- references/prompts目录存储了这个项目的主要prompt，需要永远遵循其中的要求，遇到冲突时需提出
+- references/athena_wiki目录存储了Athena++程序的官方文档（摘录），与Athena++有关的问题可参考该目录
+- references/example_scripts目录中存储了一些已经实现但不成体系的脚本命令，经过验证算法完全可用（配置变量可能有问题），在需要相关算法时可参考其中文件
+- references/lib_doc目录中存储了相关库（例如curses库）的官方文档，必要时需参考其中内容
