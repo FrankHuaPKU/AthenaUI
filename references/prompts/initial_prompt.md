@@ -55,9 +55,6 @@ AthenaUI/
 │       ├── run             # Launch simulation  
 │       ├── slc             # Generate 2D slice plots  
 │       └── mon             # Monitor running cases  
-├── test/  
-│   ├── dependency_test.sh  # Environment validation script  
-│   └── test_output/        # Test output directory (initially empty)  
 ├── references/             # Development references  
 │   ├── example_scripts/    # Pre-verified algorithm scripts  
 │   ├── athena_wiki/        # Athena++ docs  
@@ -141,9 +138,6 @@ AthenaUI/
      # HDF5_LOAD     = "module load hdf5/1.10.4-parallel-icc18"
      # PYTHON_LOAD   = "module load anaconda/3-Python3.7.4-fenggl"
      ```  
-  2. Run `test/dependency_test.sh` to validate the configuration.  
-     - On success: Print *"Dependency test passed! Configuration complete."*  
-     - On failure: Re-open `current.user` for editing until validation passes.  
 
 ## 2. Initialization Script (`init.sh`)  
 - **Functionality**:  
@@ -202,7 +196,6 @@ AthenaUI/
 ## v0.1 - Environment Validation  
 - Deliverables:  
   - `user/` directory with config system.  
-  - `test/dependency_test.sh` and `test_output/`.  
   - `config.sh`  
 
 ## v0.2 - Core Execution  
@@ -217,5 +210,3 @@ AthenaUI/
   - Enhanced `init.sh` command listings.  
 
 *Later versions TBD.*
-
-请理解以上需求，并用中文向我提问以确认你正确理解了所有需求，以及进一步确认一些可能的细节。

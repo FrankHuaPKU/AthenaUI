@@ -21,3 +21,10 @@ Thumbs.db
 *.swo
 .vscode/
 .idea/ 
+
+
+# 参考文档目录
+references
+
+# Cursor Rules
+.cursor
