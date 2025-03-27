@@ -18,11 +18,15 @@ AthenaUI是专为Athena++开发的一套终端用户界面(TUI)框架，旨在�
 
 ## 使用方法 Usage
 
+首先`git clone`安装项目（不要下载安装包，或者下载安装包后将根目录修改为`AthenaUI`）
+
+```bash
+git clone https://github.com/FrankHuaPKU/AthenaUI.git
+```
+
 ### 配置与测试 Configuration and Test
 
-利用`config.sh`脚本配置Athena++与AthenaUI的基础运行环境。
-
-首先`cd`到`AthenUI`根目录，运行配置脚本
+利用`config.sh`脚本配置Athena++与AthenaUI的基础运行环境。首先`cd`到`AthenUI`根目录，运行配置脚本
    ```bash
    source config.sh
    ```
