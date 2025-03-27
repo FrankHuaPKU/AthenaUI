@@ -24,7 +24,7 @@ Thumbs.db
 
 
 # 参考文档目录
-references
+references/
 
 # Cursor Rules
-.cursor
+.cursor/rules/
