@@ -3,8 +3,6 @@
 
 import curses
 import os
-import subprocess
-import sys
 
 def calculate_display_width(text):
     """计算字符串在终端中的实际显示宽度（考虑中文字符宽度为2）"""
@@ -94,7 +92,7 @@ def main(stdscr):
             "状态方程：",
             "Riemann求解器：",
             "运行时间限制：",
-            "开始模拟"
+            "编辑input文件"
         ]
         
         # 所有选项值（供循环使用）
@@ -104,7 +102,7 @@ def main(stdscr):
             EoS,
             rSolver + (" (固定为HLLD)" if EoS == "isothermal" else ""),
             wallTimeLimit + " 小时",
-            ""  # "开始模拟"没有值
+            ""  # "编辑input文件"没有值
         ]
         
         # 绘制选项 - 从边框下面开始
