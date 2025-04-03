@@ -1,9 +1,16 @@
 # 北京超算中心平台配置
 # 该文件定义了在北京超算中心Slurm环境下运行Athena++所需的配置
 
-SLURM_FLAG    = ON                  # 启用Slurm
+SLURM_FLAG=ON                  # 启用Slurm
 
 # 模块加载命令
-MPI_LOAD      = "module load mpich/4.1.2-ib"
-HDF5_LOAD     = "module load hdf5/1.10.4-parallel-icc18"
-PYTHON_LOAD   = "module load anaconda/3-Python3.7.4-fenggl" 
+MPI_LOAD="module load mpich/4.1.2-ib"
+HDF5_LOAD="module load hdf5/1.10.4-parallel-icc18"
+PYTHON_LOAD="module load python/3.7.6"
+
+# 配置代理（北超代理，可用于访问GitHub）
+export http_proxy=http://172.16.21.209:8888
+export https_proxy=http://172.16.21.209:8888
+export ftp_proxy=http://172.16.21.209:8888
+export HTTPS_PROXY=http://172.16.21.209:8888
+export HTTP_PROXY=http://172.16.21.209:8888
