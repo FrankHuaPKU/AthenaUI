@@ -28,3 +28,6 @@ references/
 
 # Cursor Rules
 .cursor/rules/
+
+# 忽略模拟目录下的所有子目录
+simulations/shearingBox/*/
