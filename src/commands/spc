@@ -1,9 +1,0 @@
-#!/bin/bash
-#
-# AthenaUI - spc命令
-# 用于绘制Athena++湍流谱
-#
-
-echo "AthenaUI: spc命令 - v0.0 (开发中)"
-echo "该命令将在后续版本中实现。"
-echo "" 
