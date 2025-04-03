@@ -1,118 +1,97 @@
 #!/bin/bash
 #
-# AthenaUI 初始化脚本
-# 用于加载用户配置、设置环境变量、添加命令路径到PATH
+# AthenaUI初始化脚本
+# 用于配置环境变量、自定义命令和git设置
 #
 
-# 当前脚本所在目录
+# 获取当前脚本所在的目录
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-USER_CONFIG_FILE="${SCRIPT_DIR}/user/current.user"
-COMMANDS_DIR="${SCRIPT_DIR}/src/commands"
 
-# ASCII艺术欢迎画面
-function display_welcome() {
-    echo "    _   _   _                       _   _ ___"
-    echo "   /_\ | |_| |_  ___ _ _  __ _    | | | |_ _|"
-    echo "  / _ \|  _| ' \/ -_) ' \/ _\` |_  | |_| || |"
-    echo " /_/ \_\\__|_||_\___|_||_\__,_(_)  \___/|___|"
-    echo ""
-    echo "==========================================="
-    echo " 欢迎使用 AthenaUI - Athena++的TUI框架"
-    echo " 版本: v0.0 (框架搭建)"
-    echo "==========================================="
-    echo ""
-}
-
-# 检查用户配置文件
-function check_config() {
-    if [ ! -f "$USER_CONFIG_FILE" ]; then
-        echo "错误: 未找到用户配置文件。请先运行 config.sh 完成配置。"
-        return 1
-    fi
-    
-    # 简单验证配置文件格式
-    if ! grep -q "ATHENA_PATH" "$USER_CONFIG_FILE" || \
-       ! grep -q "ATHENAUI_PATH" "$USER_CONFIG_FILE"; then
-        echo "错误: 用户配置文件格式不正确。请检查 $USER_CONFIG_FILE"
-        return 1
-    fi
-    
-    return 0
-}
-
-# 加载用户配置
-function load_config() {
-    echo "正在加载用户配置..."
-    
-    # 导出配置变量到环境
-    # 使用source命令加载配置文件中的变量
-    source "$USER_CONFIG_FILE"
-    
-    # 验证关键变量是否加载
-    if [ -z "$ATHENA_PATH" ] || [ -z "$ATHENAUI_PATH" ]; then
-        echo "错误: 配置文件中缺少必要的路径设置。"
-        return 1
-    fi
-    
-    # 设置平台特定环境
-    if [ "$SLURM_FLAG" = "ON" ]; then
-        echo "已启用Slurm环境配置。"
-        # 加载模块 (根据配置文件中的命令)
-        if [ ! -z "$MPI_LOAD" ]; then eval $MPI_LOAD; fi
-        if [ ! -z "$HDF5_LOAD" ]; then eval $HDF5_LOAD; fi
-        if [ ! -z "$PYTHON_LOAD" ]; then eval $PYTHON_LOAD; fi
+# 最开始检测是否在AthenaUI目录下
+if [[ "$PWD" == *"/AthenaUI"* ]]; then
+    # 找到当前用户的AthenaUI目录
+    ATHENAUI_DIR=$(dirname "$PWD")
+    if [[ "$PWD" == *"/AthenaUI" ]]; then
+        ATHENAUI_DIR="$PWD"
     else
-        echo "使用本地环境配置。"
+        # 如果在AthenaUI的子目录，则向上查找AthenaUI根目录
+        CURRENT_DIR="$PWD"
+        while [[ "$CURRENT_DIR" != "/" && ! "$CURRENT_DIR" =~ .*AthenaUI$ ]]; do
+            CURRENT_DIR=$(dirname "$CURRENT_DIR")
+        done
+        
+        if [[ "$CURRENT_DIR" =~ .*AthenaUI$ ]]; then
+            ATHENAUI_DIR="$CURRENT_DIR"
+        else
+            return 1
+        fi
     fi
     
-    return 0
-}
+    # 切换到AthenaUI根目录
+    # cd "$ATHENAUI_DIR"
+else
+    return 1
+fi
 
-# 设置命令路径
-function setup_commands() {
-    echo "配置命令路径..."
-    
-    # 确保命令目录中的脚本具有执行权限
-    chmod +x ${COMMANDS_DIR}/*
-    
-    # 将命令目录添加到PATH
-    export PATH="$COMMANDS_DIR:$PATH"
-    
-    return 0
-}
+# 显示欢迎信息
+echo "╔═══════════════════════════════════════════╗"
+echo "║                                           ║"
+echo "║    Welcome to AthenaUI! Version: 0.1.0    ║"
+echo "║                                           ║"
+echo "╚═══════════════════════════════════════════╝"
 
-# 显示可用命令
-function list_commands() {
-    echo "可用命令:"
-    echo "  run  - 配置和运行新的模拟"
-    echo "  slc  - 生成2D切片图"
-    echo "  spc  - 绘制湍流谱"
-    echo ""
-}
+# 加载用户配置文件
+USER_CONFIG="$ATHENAUI_DIR/user/current.user"
+if [ -f "$USER_CONFIG" ]; then
+    source "$USER_CONFIG"
 
-# 主函数
-function main() {
-    display_welcome
-    
-    if ! check_config; then
-        return 1
+    # 加载环境模块
+    if [ -n "$MPI_LOAD" ]; then
+        eval "$MPI_LOAD"
     fi
-    
-    if ! load_config; then
-        return 1
+    if [ -n "$HDF5_LOAD" ]; then
+        eval "$HDF5_LOAD"
     fi
-    
-    if ! setup_commands; then
-        return 1
+    if [ -n "$PYTHON_LOAD" ]; then
+        eval "$PYTHON_LOAD"
     fi
-    
-    list_commands
-    
-    echo "初始化完成！输入命令开始使用。"
-    echo ""
-    
-    return 0
-}
+else
+    echo "警告：未找到用户配置文件，请确保$USER_CONFIG存在"
+fi
 
-# 执行主函数
-main 
+# -------自定义命令-----------------------------------------------------
+
+# mon命令：监控SLURM作业
+alias mon="
+    watch -n 0.1 '
+        echo \"slurm.out File:\";
+        echo \"\";
+        slurmFile=\$(ls -t slurm-*.out 2>/dev/null | head -n1);
+        if [ -n \"\$slurmFile\" ]; then
+            tail -n 10 \"\$slurmFile\";
+        else
+            echo \"Slurm output files not found.\";
+        fi;
+        echo \"\";
+        echo \"Press Ctrl + C to exit.\"
+    '
+"
+
+# run命令：启动Athena++模拟，调用run.py
+alias run="python $ATHENAUI_DIR/src/tui/run.py"
+
+
+# 用户名命令：切换到对应用户目录
+if [ -n "$USERNAME" ]; then
+    alias $USERNAME="cd $ATHENAUI_PATH"
+fi
+
+
+# -------显示功能列表-----------------------------------------------------
+cat << EOF
+
+目前支持的自定义命令：
+  run：启动Athena++模拟（目前仅支持剪切盒模拟）
+  mon：监控当前模拟case运行进度
+
+EOF
