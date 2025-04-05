@@ -10,8 +10,14 @@ FP=${ATHENA_FP:-"FP64"}         # 默认为FP64
 EoS=${ATHENA_EOS:-"isothermal"} # 默认为isothermal
 rSolver=${ATHENA_RSOLVER:-"HLLD"} # 默认为HLLD
 wallTimeLimit=${ATHENA_WALL_TIME_LIMIT:-"24"} # 默认为24小时
+inputTemplate=${ATHENA_INPUT_TEMPLATE:-""} # 默认为空
+inputEditor=${ATHENA_INPUT_EDITOR:-"manual"} # 默认为manual
+
+# 转换为小写，确保匹配正确
+inputEditor=$(echo $inputEditor | tr '[:upper:]' '[:lower:]')
 
 # 打印参数，便于调试
+echo " "
 echo "═════════════════════════════════════════"
 echo "当前模拟参数："
 echo "  • 模拟case名称：$caseDir"
@@ -19,6 +25,8 @@ echo "  • 量化精度：$FP"
 echo "  • 状态方程：$EoS"
 echo "  • Riemann求解器：$rSolver"
 echo "  • 运行时间限制：$wallTimeLimit 小时"
+echo "  • input文件模板：${inputTemplate:-"内置input"}"
+echo "  • 编辑模式：$inputEditor"
 echo "═════════════════════════════════════════"
 echo ""
 
@@ -45,6 +53,7 @@ else
     FLOAT_FLAG=""
 fi
 
+# 处理input文件
 # 检查目标case目录下是不是已经有input文件（比如不是第一次跑这个case）
 if [ -e $ATHENAUI_PATH/simulations/shearingBox/$caseDir/athinput.hgb ]; then 
     
@@ -56,8 +65,14 @@ if [ -e $ATHENAUI_PATH/simulations/shearingBox/$caseDir/athinput.hgb ]; then
         if [[ "$editFlag" == "n" ]]; then
             break
         elif [[ "$editFlag" == "y" ]]; then
-            # 启动input文件编辑器 
-            nano $ATHENAUI_PATH/simulations/shearingBox/$caseDir/athinput.hgb
+            # 根据选择的编辑模式处理
+            if [[ "$inputEditor" == "nano" ]]; then
+                # 启动nano编辑器
+                nano $ATHENAUI_PATH/simulations/shearingBox/$caseDir/athinput.hgb
+            else
+                # manual模式
+                read -p "请在VSCode中手动编辑input文件，保存后按回车继续" # 等待用户按回车
+            fi
             break
         else 
             echo "请输入y或n。"
@@ -65,34 +80,32 @@ if [ -e $ATHENAUI_PATH/simulations/shearingBox/$caseDir/athinput.hgb ]; then
         
     done
 
-# 如果没有现存input文件，就要找一个模版作为修改的起点
+# 如果没有现存input文件，就要根据inputTemplate处理
 else
-
-    # 询问input文件目录，并检查输入目录是否合法，不合法则要求再次输入
-    read -p "请设置input文件路径（输入'default'使用内置input，或输入已有case目录）：" inputDirectory
+    # 如果inputTemplate为空，使用内置input文件
+    if [[ -z "$inputTemplate" ]]; then
+        cp $ATHENA_PATH/inputs/mhd/athinput.hgb $ATHENAUI_PATH/simulations/shearingBox/$caseDir/
+        echo "使用内置input文件作为模板"
+    # 如果inputTemplate是"default"，也使用内置input文件
+    elif [[ "$inputTemplate" == "default" ]]; then
+        cp $ATHENA_PATH/inputs/mhd/athinput.hgb $ATHENAUI_PATH/simulations/shearingBox/$caseDir/
+        echo "使用内置input文件作为模板"
+    # 否则尝试从指定的case目录复制input文件
+    elif [ -e "$ATHENAUI_PATH/simulations/shearingBox/$inputTemplate/athinput.hgb" ]; then 
+        cp $ATHENAUI_PATH/simulations/shearingBox/$inputTemplate/athinput.hgb $ATHENAUI_PATH/simulations/shearingBox/$caseDir/
+    else
+        echo "错误：未找到指定的input模板 '$inputTemplate'"
+        exit 1
+    fi
     
-    # 反复询问，直到输入合法
-    while true; do
-    
-        # 输入default，就调用Athena++内置input文件
-        if [[ "$inputDirectory" == "default" ]]; then
-            cp $ATHENA_PATH/inputs/mhd/athinput.hgb $ATHENAUI_PATH/simulations/shearingBox/$caseDir/
-            break
-            
-        # 输入一个case目录，就调用这个case中的input文件
-        elif [ -e "$ATHENAUI_PATH/simulations/shearingBox/$inputDirectory/athinput.hgb" ]; then 
-            cp $ATHENAUI_PATH/simulations/shearingBox/$inputDirectory/athinput.hgb $ATHENAUI_PATH/simulations/shearingBox/$caseDir/
-            break
-        
-        else
-            read -p "未找到输入目录或目录无效。请提供有效的目录名：" inputDirectory
-        fi
-        
-    done
-    
-    # 启动input文件编辑器 
-    nano $ATHENAUI_PATH/simulations/shearingBox/$caseDir/athinput.hgb
-
+    # 根据选择的编辑模式处理
+    if [[ "$inputEditor" == "nano" ]]; then
+        # 启动nano编辑器
+        nano $ATHENAUI_PATH/simulations/shearingBox/$caseDir/athinput.hgb
+    else
+        # manual模式
+        read -p "请在VSCode等编辑器中手动编辑input文件，保存后按回车继续" # 等待用户按回车
+    fi
 fi
 
 # 自动提取athinput.hgb文件中的参数
