@@ -10,7 +10,7 @@ AthenaUI是专为Athena++开发的一套终端用户界面(TUI)框架，旨在�
 
 ### 主要功能 Features
 
-- **配置模拟**：用于配置模拟参数，目前仅支持剪切盒模拟（`pgen/hgb.cpp`）
+- **配置模拟**：用于配置模拟参数，目前仅支持剪切盒模拟（Athena++中的`pgen/hgb.cpp`）
 - **运行管理**：提供模拟运行监控和控制功能
 - **后处理**：支持常规后处理算法与可视化
 
@@ -18,11 +18,13 @@ AthenaUI是专为Athena++开发的一套终端用户界面(TUI)框架，旨在�
 
 ## 使用方法 Usage
 
-首先`git clone`安装项目（不要下载安装包，或者下载安装包后将根目录修改为`AthenaUI`）
+如果环境支持联网，尽量使用`git clone`安装项目（如果有开发需求，自然是要先Fork一份比较方便）
 
 ```bash
 git clone https://github.com/FrankHuaPKU/AthenaUI.git
 ```
+
+如果无法联网，或者`git clone`安装失败，则推荐在Release页面直接下载最新版本。
 
 ### 配置与测试 Configuration and Test
 
@@ -51,25 +53,71 @@ git clone https://github.com/FrankHuaPKU/AthenaUI.git
    ```
 如果测试未通过，请根据提示信息检查配置（也可以手动修改`current.user`配置文件）。
 
-### 日常使用 Running commands
+### 调用命令 Running Commands
 
-首先初始化环境：
-   ```bash
-   source init.sh
-   ```
-此时会加载并打印出当前兼容的所有命令：（例如）
-   - `run`: 配置新的模拟
-   - `slc`: 生成2D切片图
-   - `spc`: 绘制湍流谱
-调用命令即可启动对应的TUI，实现对应功能。
+为了便于使用，这里提供两种情况下的用法。如果在本地运行模拟，或者远程服务器支持SSH连接，则推荐在VSCode等IDE中使用AthenaUI（当然集成了AI功能的Cursor更加方便，也是我目前的主要方案）。当然，这两种方法也可以同时使用，互不冲突。
 
-### 快捷方式 Shortcut
 
-为避免每次使用AthenaUI时都要`cd`到根目录再`source init.sh`，可以在`~/.bashrc`文件中添加每个用户专属的自定义命令，实现从任意目录启动AthenaUI：
+#### VSCode等IDE（Recommended）
+
+首先在`.bashrc`文件中添加如下命令：
 
 ```bash
-alias [your_alias]='cd $ATHENAUI_PATH && source init.sh'
+source /path/to/your/AthenaUI/init.sh
 ```
+
+例如：
+```bash
+# Author: hyy
+# Date: Mar 31, 2025
+source /public1/home/sc51248/hyy/Athena++/AthenaUI/init.sh
+```
+
+这样每次打开VSCode时，都会自动加载AthenaUI相关命令，并打印提示语，例如：
+
+```bash
+╔═══════════════════════════════════════════╗
+║                                           ║
+║    Welcome to AthenaUI! Version: 0.1.0    ║
+║                                           ║
+╚═══════════════════════════════════════════╝
+
+目前支持的自定义命令：
+  run：启动Athena++模拟（目前仅支持剪切盒模拟）
+  mon：监控当前模拟case运行进度
+```
+展示欢迎语以及当前支持的所有功能，用户可直接参考提示信息使用。
+
+
+#### 终端环境
+
+直接在终端中使用AthenaUI时，每次启动终端往往不会位于`AthenaUI`根目录，因此需要每次手动`cd`到根目录再`source init.sh`，略显麻烦，因此考虑进一部自动化：在`.bashrc`文件中添加以下命令：
+
+```bash
+alias [your_alias]='cd /path/to/your/AthenaUI/ && source init.sh'
+```
+例如：
+```bash
+# Author: hyy
+# Date: Apr 5, 2025
+alias hyy='cd /public1/home/sc51248/hyy/Athena++/AthenaUI/ && source init.sh'
+```
+
+这样在任何目录下都只需一条命令即可启动AthenaUI，并且在当前对话下持续生效。在输入你的自定义命令并回车后，同样会自动打印提示语，例如：
+
+```bash
+╔═══════════════════════════════════════════╗
+║                                           ║
+║    Welcome to AthenaUI! Version: 0.1.0    ║
+║                                           ║
+╚═══════════════════════════════════════════╝
+
+目前支持的自定义命令：
+  run：启动Athena++模拟（目前仅支持剪切盒模拟）
+  mon：监控当前模拟case运行进度
+```
+展示欢迎语以及当前支持的所有功能，用户可直接参考提示信息使用。
+
 
 ## 贡献与支持 Contribution and Support
 
