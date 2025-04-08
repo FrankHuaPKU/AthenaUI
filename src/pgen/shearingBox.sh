@@ -30,8 +30,14 @@ echo "  • 编辑模式：$inputEditor"
 echo "═════════════════════════════════════════"
 echo ""
 
-# source current.user文件获取配置
-source user/current.user
+# 获取脚本所在目录
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# 获取AthenaUI根目录 (脚本在src/pgen/目录下)
+ATHENAUI_DIR="$( cd "$SCRIPT_DIR/../.." &> /dev/null && pwd )"
+
+# source current.user文件获取配置，使用绝对路径
+source "$ATHENAUI_DIR/user/current.user"
 
 # 切换到AthenaUI根目录
 cd $ATHENAUI_PATH

@@ -73,7 +73,7 @@ def main(stdscr):
         height, width = stdscr.getmaxyx()
         
         # 绘制标题和边框
-        title = "Athena++ 剪切盒模拟配置"
+        title = "Athena++ Configuration for Shearing Box Simulation"
         display_width = calculate_display_width(title)
         title_padding = 6  # 标题左右的填充空间
         box_width = display_width + title_padding * 2
