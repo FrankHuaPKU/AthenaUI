@@ -169,28 +169,28 @@ def main(stdscr):
                 else:
                     stdscr.attroff(curses.color_pair(1))
         
-        # 绘制提示信息
-        hints = [
-            "上下方向键：选择不同选项",
-            "左右方向键：修改选中选项的值",
-            "回车键：确认当前选项",
-            "ESC键（或Ctrl+C）：退出（可能略有延迟）"
+        # 绘制提示信息（单行）
+        stdscr.attron(curses.color_pair(3))
+        hint_y = height - 2  # 在倒数第二行显示提示
+        hint_x = 2
+        
+        hints_parts = [
+            ("上下方向键：", True), ("选择不同参数", False), ("  ", False),
+            ("左右方向键：", True), ("修改参数的值", False), ("  ", False),
+            ("回车键：", True), ("确认当前参数", False), ("  ", False),
+            ("ESC键或Ctrl+C：", True), ("退出", False)
         ]
         
-        for i, hint in enumerate(hints):
-            stdscr.attron(curses.color_pair(3) | curses.A_BOLD)
-            
-            # 分离冒号前后的内容，使冒号前的部分为粗体
-            if "：" in hint:
-                parts = hint.split("：", 1)
-                stdscr.addstr(height - 5 + i, 2, parts[0] + "：")
-                stdscr.attroff(curses.A_BOLD)  # 关闭粗体
-                stdscr.addstr(parts[1])
-            else:
-                stdscr.addstr(height - 5 + i, 2, hint)
+        for text, is_bold in hints_parts:
+            if is_bold:
+                stdscr.attron(curses.A_BOLD)
+                stdscr.addstr(hint_y, hint_x, text)
                 stdscr.attroff(curses.A_BOLD)
-            
-            stdscr.attroff(curses.color_pair(3))
+            else:
+                stdscr.addstr(hint_y, hint_x, text)
+            hint_x += calculate_display_width(text) # 更新 x 坐标
+
+        stdscr.attroff(curses.color_pair(3))
         
         # 刷新屏幕
         stdscr.refresh()
