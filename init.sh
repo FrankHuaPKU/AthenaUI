@@ -83,6 +83,9 @@ alias run="python $ATHENAUI_DIR/src/tui/run.py"
 # rst命令：继续运行Athena++模拟，调用rst.py
 alias rst="python $ATHENAUI_DIR/src/tui/rst.py"
 
+# hst命令：绘制历史数据图，调用hst.py
+alias hst="srun -J $USERNAME python $ATHENAUI_DIR/src/hst.py"
+
 # 用户名命令：切换到对应用户目录
 if [ -n "$USERNAME" ]; then
     alias $USERNAME="cd $ATHENAUI_PATH"
@@ -96,5 +99,6 @@ cat << EOF
   run：启动Athena++模拟（目前仅支持剪切盒模拟）
   rst：继续运行已有的Athena++模拟（restart功能）
   mon：监控当前模拟case运行进度
+  hst：绘制.hst文件中物理量随时间变化的曲线图
 
 EOF
