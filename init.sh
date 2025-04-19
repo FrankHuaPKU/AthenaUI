@@ -84,7 +84,7 @@ alias run="python $ATHENAUI_DIR/src/tui/run.py"
 alias rst="python $ATHENAUI_DIR/src/tui/rst.py"
 
 # hst命令：绘制历史数据图，调用hst.py
-alias hst="srun -J $USERNAME python $ATHENAUI_DIR/src/hst.py"
+alias hst="srun -J $USERNAME python $ATHENAUI_DIR/src/post/hst.py"
 
 # slc命令：绘制流场切片图，调用slc.py
 alias slc="python $ATHENAUI_DIR/src/tui/slc.py --athena_path=\"$ATHENA_PATH\""
