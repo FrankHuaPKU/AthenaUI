@@ -339,7 +339,7 @@ def main(stdscr):
     
     # 找到slc.sh脚本路径
     script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    slc_script = os.path.join(script_dir, "post", "slc.sh")
+    slc_script = os.path.join(script_dir, "post", "slice.sh")
     
     if not os.path.exists(slc_script):
         print(f"错误：未找到脚本 {slc_script}")

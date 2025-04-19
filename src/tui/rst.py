@@ -414,7 +414,7 @@ def main(stdscr):
                 pass
 
     # 构建命令
-    script_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "rst.sh")
+    script_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "restart.sh")
     
     # 检查脚本是否存在
     if not os.path.exists(script_path):
