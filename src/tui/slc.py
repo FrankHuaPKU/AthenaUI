@@ -6,17 +6,20 @@ import os
 import glob
 import sys
 import re
-import argparse
 import numpy as np
 
-# 处理命令行参数
-def parse_arguments():
-    parser = argparse.ArgumentParser(description='绘制Athena++流场切片图')
-    parser.add_argument('--athena_path', type=str, help='Athena++安装路径，优先级高于ATHENA_PATH环境变量')
-    return parser.parse_args()
-
-# 全局参数
-args = parse_arguments()
+def get_athena_path():
+    """获取Athena++安装路径"""
+    athena_path = os.environ.get('ATHENA_PATH')
+    
+    if athena_path is None:
+        # 如果路径未指定，尝试使用默认路径
+ 
+        print("错误：无法确定Athena++安装路径")
+        print("请设置ATHENA_PATH环境变量")
+        sys.exit(1)
+    
+    return athena_path
 
 def calculate_display_width(text):
     """计算字符串在终端中的实际显示宽度（考虑中文字符宽度为2）"""
@@ -308,25 +311,7 @@ def main(stdscr):
         return
     
     # 优先使用命令行参数指定的路径
-    athena_path = args.athena_path if args.athena_path else os.environ.get('ATHENA_PATH')
-    
-    if athena_path is None:
-        # 如果路径未指定，尝试使用默认路径
-        default_paths = [
-            "/public1/home/sc51248/hyy/Athena++/athena",  # 特定用户默认路径
-            os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "athena")  # 项目相对路径
-        ]
-        
-        for path in default_paths:
-            if os.path.exists(os.path.join(path, 'vis', 'python', 'athena_read.py')):
-                athena_path = path
-                print(f"注意: 使用默认Athena++路径: {athena_path}")
-                break
-        
-        if athena_path is None:
-            print("错误：无法确定Athena++安装路径")
-            print("请使用 --athena_path 参数指定路径，或设置ATHENA_PATH环境变量")
-            return
+    athena_path = get_athena_path()
     
     # 获取当前case目录名
     caseDir = os.path.basename(os.getcwd())

@@ -77,7 +77,7 @@ alias rst="python $ATHENAUI_DIR/src/tui/rst.py"
 alias hst="srun -J $USERNAME python $ATHENAUI_DIR/src/post/hst.py"
 
 # slc命令：绘制流场切片图，调用slc.py
-alias slc="python $ATHENAUI_DIR/src/tui/slc.py --athena_path=\"$ATHENA_PATH\""
+alias slc="python $ATHENAUI_DIR/src/tui/slc.py"
 
 # cor命令：计算两点空间自关联函数，调用cor.py
 alias cor="python $ATHENAUI_DIR/src/tui/cor.py"
@@ -92,11 +92,8 @@ fi
 cat << EOF
 
 目前支持的自定义命令：
-  run：启动Athena++模拟（目前仅支持剪切盒模拟）
-  rst：继续运行已有的Athena++模拟（restart功能）
-  mon：监控当前模拟case运行进度
-  hst：绘制.hst文件中物理量随时间变化的曲线图
-  slc：绘制流场的切片图
-  cor：计算两点空间自关联函数
+  run：启动新的模拟case（仅支持剪切盒）     mon：监控当前模拟case运行进度
+  rst：继续运行已有模拟case                 hst：绘制物理量随时间变化的曲线图
+  slc：绘制流场的切片图                     cor：计算两点空间关联函数
 
 EOF
