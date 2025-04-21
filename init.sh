@@ -42,19 +42,9 @@ echo "╚═══════════════════════�
 
 # 加载用户配置文件
 USER_CONFIG="$ATHENAUI_DIR/user/current.user"
+
 if [ -f "$USER_CONFIG" ]; then
     source "$USER_CONFIG"
-
-    # 加载环境模块
-    if [ -n "$MPI_LOAD" ]; then
-        eval "$MPI_LOAD"
-    fi
-    if [ -n "$HDF5_LOAD" ]; then
-        eval "$HDF5_LOAD"
-    fi
-    if [ -n "$PYTHON_LOAD" ]; then
-        eval "$PYTHON_LOAD"
-    fi
 else
     echo "警告：未找到用户配置文件，请确保$USER_CONFIG存在"
 fi
@@ -89,6 +79,9 @@ alias hst="srun -J $USERNAME python $ATHENAUI_DIR/src/post/hst.py"
 # slc命令：绘制流场切片图，调用slc.py
 alias slc="python $ATHENAUI_DIR/src/tui/slc.py --athena_path=\"$ATHENA_PATH\""
 
+# cor命令：计算两点空间自关联函数，调用cor.py
+alias cor="python $ATHENAUI_DIR/src/tui/cor.py"
+
 # 用户名命令：切换到对应用户目录
 if [ -n "$USERNAME" ]; then
     alias $USERNAME="cd $ATHENAUI_PATH"
@@ -104,5 +97,6 @@ cat << EOF
   mon：监控当前模拟case运行进度
   hst：绘制.hst文件中物理量随时间变化的曲线图
   slc：绘制流场的切片图
+  cor：计算两点空间自关联函数
 
 EOF
