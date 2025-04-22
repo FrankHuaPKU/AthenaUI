@@ -1,5 +1,4 @@
 import os
-import glob
 import numpy as np # type: ignore
 import matplotlib.pyplot as plt # type: ignore
 
@@ -14,14 +13,14 @@ if not os.path.isdir(outputs_dir):
     exit(1)
 
 # 获取唯一的 .hst 文件
-hst_files = glob.glob(os.path.join(outputs_dir, '*.hst'))
+hst_files = [f for f in os.listdir(outputs_dir) if f.endswith('.hst')]
 if not hst_files:
     print(f"错误：在 '{outputs_dir}' 目录下找不到 .hst 文件。")
     exit(1)
 if len(hst_files) > 1:
     print(f"警告：在 '{outputs_dir}' 目录下找到多个 .hst 文件，将使用第一个文件：'{hst_files[0]}'")
 
-hst_file = hst_files[0]
+hst_file = os.path.join(outputs_dir, hst_files[0])
 
 # 读取文件，跳过前两行
 try:
@@ -113,7 +112,7 @@ for i, var_name in enumerate(var_names):
 
         # 添加标题并调整位置
         # y参数控制标题到顶部的距离，值越小距离越大
-        fig.suptitle(f'{case_name}', fontsize=16, y=0.97) 
+        fig.suptitle(f'{case_name}', fontsize=14, y=0.97) 
         plt.subplots_adjust(bottom=0.10, top=0.92)
         # plt.subplots_adjust(top=0.88)  # 调整上边距，为标题留出空间
         # fig.tight_layout()
