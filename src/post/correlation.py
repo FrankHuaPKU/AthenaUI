@@ -21,6 +21,8 @@ else:
 
 def find_files(outn, t1, t2):
     """查找满足时间区间条件的输出文件"""
+    print("正在查询目标输出文件...", flush=True)
+    
     # 获取当前路径
     current_path = os.getcwd()
     
@@ -30,7 +32,7 @@ def find_files(outn, t1, t2):
     # 获取所有匹配的文件
     files = glob.glob(pattern)
     if not files:
-        print(f"错误：未找到任何与模式 {pattern} 匹配的文件")
+        print(f"错误：未找到任何与模式 {pattern} 匹配的文件", flush=True)
         return []
     
     # 解析每个文件的时间，筛选满足条件的文件
@@ -47,7 +49,7 @@ def find_files(outn, t1, t2):
                 filtered_files.append(file)
                 times.append(time)
         except Exception as e:
-            print(f"警告：读取文件 {file} 时出错：{e}")
+            print(f"警告：读取文件 {file} 时出错：{e}", flush=True)
     
     # 按时间排序
     sorted_indices = np.argsort(times)
@@ -55,10 +57,9 @@ def find_files(outn, t1, t2):
     sorted_times = [times[i] for i in sorted_indices]
     
     if not sorted_files:
-        print(f"错误：在时间区间 [{t1}, {t2 if t2 is not None else '∞'}] 内未找到任何有效文件")
+        print(f"错误：在时间区间 [{t1}, {t2 if t2 is not None else '∞'}] 内未找到任何有效文件", flush=True)
     else:
-        print(f"找到 {len(sorted_files)} 个时间区间 [{t1}, {t2 if t2 is not None else '∞'}] 内的文件")
-        print(f"时间范围：{sorted_times[0]} 到 {sorted_times[-1]}")
+        print(f"在时间区间 [{t1}, {t2 if t2 is not None else '∞'}] 内找到 {len(sorted_files)} 个文件，开始计算关联函数：\n", flush=True)
     
     return sorted_files, sorted_times[0] if sorted_times else 0, sorted_times[-1] if sorted_times else 0
 
@@ -71,6 +72,8 @@ def calculate_correlation(files, var):
     
     for file in files:
         try:
+            print(f"正在处理：{os.path.basename(file)}", flush=True)
+            sys.stdout.flush()  # 强制刷新输出
             # 读取数据
             data = athena_read.athdf(file)
             
@@ -80,6 +83,8 @@ def calculate_correlation(files, var):
                 # 转置数组以匹配 (x, y, z) 顺序
                 rho = np.transpose(rho, (2, 1, 0))
                 corr = signal.correlate(rho, rho, mode='same', method='auto')
+                # 归一化
+                corr = corr / corr[corr.shape[0]//2, corr.shape[1]//2, corr.shape[2]//2]
                 all_correlations.append(corr)
             
             elif var == 'vel':
@@ -97,6 +102,8 @@ def calculate_correlation(files, var):
                 corr_z = signal.correlate(Vz, Vz, mode='same', method='auto')
                 
                 corr = corr_x + corr_y + corr_z
+                # 归一化
+                corr = corr / corr[corr.shape[0]//2, corr.shape[1]//2, corr.shape[2]//2]
                 all_correlations.append(corr)
             
             elif var == 'B':
@@ -115,10 +122,11 @@ def calculate_correlation(files, var):
                     corr_z = signal.correlate(Bz, Bz, mode='same', method='auto')
                     
                     corr = corr_x + corr_y + corr_z
+                    # 归一化
+                    corr = corr / corr[corr.shape[0]//2, corr.shape[1]//2, corr.shape[2]//2]
                     all_correlations.append(corr)
                 except KeyError:
                     # 尝试使用替代变量名
-                    print("使用替代磁场变量名...")
                     try:
                         Bx = data['B1']
                         By = data['B2']
@@ -133,12 +141,14 @@ def calculate_correlation(files, var):
                         corr_z = signal.correlate(Bz, Bz, mode='same', method='auto')
                         
                         corr = corr_x + corr_y + corr_z
+                        # 归一化
+                        corr = corr / corr[corr.shape[0]//2, corr.shape[1]//2, corr.shape[2]//2]
                         all_correlations.append(corr)
                     except KeyError as e:
-                        print(f"错误：未找到磁场数据：{e}")
+                        print(f"错误：未找到磁场数据：{e}", flush=True)
         
         except Exception as e:
-            print(f"警告：处理文件 {file} 时出错：{e}")
+            print(f"警告：处理文件 {file} 时出错：{e}", flush=True)
     
     # 计算平均关联函数
     if all_correlations:
@@ -169,8 +179,11 @@ def plot_2d_slices(corr, t_start, t_end, case_name, var, Lx, Ly, Lz):
                   f'{var}-ySlice({t_start:.2f}-{t_end:.2f}).pdf', 
                   f'{var}-zSlice({t_start:.2f}-{t_end:.2f}).pdf']
     
+    # 为不同切片设置不同的图片比例
+    figsize_list = [(10, 4), (10, 8), (10, 4)]  # 分别对应x, y, z切片
+    
     for i in range(3):
-        plt.figure(figsize=(10, 8))
+        plt.figure(figsize=figsize_list[i])
         
         if i == 0:
             # X切片 (YZ平面)
@@ -189,10 +202,10 @@ def plot_2d_slices(corr, t_start, t_end, case_name, var, Lx, Ly, Lz):
         else:
             # Z切片 (XY平面)
             slice_data = corr[:, :, center[2]]
-            extent = [-Lx/2, Lx/2, -Ly/2, Ly/2]
-            plt.imshow(slice_data, origin='lower', cmap='tab20c', extent=extent, aspect='equal')
-            plt.xlabel('Δx')
-            plt.ylabel('Δy')
+            extent = [-Ly/2, Ly/2, -Lx/2, Lx/2]  # 交换x和y轴
+            plt.imshow(slice_data.T, origin='lower', cmap='tab20c', extent=extent, aspect='equal')  # 转置数据并交换轴
+            plt.xlabel('Δy')
+            plt.ylabel('Δx')
         
         plt.colorbar(label='Correlation')
         plt.title(f'Correlation Function: {var}')
@@ -263,12 +276,14 @@ def main():
     # 获取当前case名称
     current_dir = os.getcwd()
     case_name = os.path.basename(current_dir)
+
+    print(f"\n正在提取网格信息...", flush=True)
     
     # 获取网格信息 (读取第一个文件)
     grid_info_file = os.path.join(current_dir, 'outputs', f'*.{args.outn}.00000.athdf')
     grid_files = glob.glob(grid_info_file)
     if not grid_files:
-        print(f"错误：无法找到用于读取网格信息的参考文件: {grid_info_file}")
+        print(f"错误：无法找到用于读取网格信息的参考文件: {grid_info_file}", flush=True)
         return
     
     try:
@@ -284,39 +299,39 @@ def main():
         Ly = x2max - x2min
         Lz = x3max - x3min
 
+        print(f"   Lx * Ly * Lz = {Lx} * {Ly} * {Lz};  Nx * Ny * Nz = {Nx} * {Ny} * {Nz}\n", flush=True)
+
     except Exception as e:
-        print(f"错误：读取网格信息时出错: {e}")
+        print(f"错误：读取网格信息时出错: {e}", flush=True)
         return
-    
-    print(f"计算 {case_name} 的 {args.var} 自关联函数...")
+
     
     # 查找输出文件
     files, t_start, t_end = find_files(args.outn, args.t1, args.t2)
     
     if not files:
-        print("未找到满足条件的文件，退出计算")
+        print("未找到满足条件的文件，退出计算", flush=True)
         return
     
     # 创建输出目录
     output_dir = create_directories(t_start, t_end)
     
     # 计算关联函数
-    print("正在计算关联函数...")
     corr = calculate_correlation(files, args.var)
     
     if corr is None:
-        print("关联函数计算失败，退出计算")
+        print("关联函数计算失败，退出计算", flush=True)
         return
     
+    print("正在绘图...", flush=True)
+
     # 绘制2D切片图
-    print("正在绘制2D切片图...")
     plot_2d_slices(corr, t_start, t_end, case_name, args.var, Lx, Ly, Lz)
     
     # 绘制1D曲线图
-    print("正在绘制1D曲线图...")
     plot_1d_slices(corr, t_start, t_end, case_name, args.var, Lx, Ly, Lz, Nx, Ny, Nz)
     
-    print(f"计算完成！绘图已保存至 {output_dir} 目录")
+    print(f"计算完成！关联函数图已保存。", flush=True)
 
 if __name__ == '__main__':
     main()

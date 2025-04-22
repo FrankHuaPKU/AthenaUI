@@ -378,9 +378,9 @@ def main(stdscr):
     slurm_flag = os.environ.get('SLURM_FLAG', 'OFF')
     if slurm_flag == 'ON':
         username = os.environ.get('USERNAME', '')
-        cmd = f"srun -J {username} python {script_path} {cmd_args} && /bin/bash"
+        cmd = f"srun -J {username} python {script_path} {cmd_args} && clear"
     else:
-        cmd = f"python {script_path} {cmd_args} && /bin/bash"
+        cmd = f"python {script_path} {cmd_args} && clear"
     
     # 执行命令
     os.system(cmd)
