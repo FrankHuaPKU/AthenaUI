@@ -102,7 +102,7 @@ def main(stdscr):
             "状态方程：",
             "Riemann求解器：",
             "运行时间限制：",
-            "输入input文件模板（默认为内置input，或输入一个现有case）：",
+            "选择input文件模板（可选项）：",
             "input文件编辑模式：",
             "确认"
         ]
