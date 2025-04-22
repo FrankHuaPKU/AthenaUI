@@ -398,7 +398,7 @@ def main(stdscr):
     os.environ["ATHENA_INPUT_TEMPLATE"] = inputTemplate
     os.environ["ATHENA_INPUT_EDITOR"] = inputEditor
     
-    os.system(f"source {script_path} && cd $ATHENAUI_PATH/simulations/shearingBox/{caseDir}/ && /bin/bash")
+    os.system(f"source {script_path} && cd $ATHENAUI_PATH/simulations/shearingBox/{caseDir}/ && clear")
 
 
 if __name__ == "__main__":

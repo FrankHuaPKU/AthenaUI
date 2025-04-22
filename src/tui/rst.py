@@ -326,7 +326,7 @@ def main(stdscr):
     os.environ["ATHENA_INPUT_EDITOR"] = inputEditor
     
     # 使用与run.py相同的方式执行脚本
-    os.system(f"source {script_path} && /bin/bash")
+    os.system(f"source {script_path} && clear")
 
 
 if __name__ == "__main__":

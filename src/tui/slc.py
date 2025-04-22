@@ -342,7 +342,7 @@ def main(stdscr):
     
     # 调用slc.sh脚本
     print("正在启动绘图流程...")
-    cmd = f"source {slc_script} && /bin/bash"
+    cmd = f"source {slc_script} && clear"
     os.system(cmd)
 
 
