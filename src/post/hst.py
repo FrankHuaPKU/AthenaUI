@@ -122,4 +122,4 @@ for i, var_name in enumerate(var_names):
         plt.savefig(os.path.join(output_dir, output_file))
         plt.close()
 
-print(f"\n History Plots saved.\n")
+print(f"\nHistory Plots saved.\n")
