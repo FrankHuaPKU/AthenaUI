@@ -89,32 +89,21 @@ fi
 NEW_OUTPUT_FLAG=${ATHENA_NEW_OUTPUT_FLAG:-0}
 INPUT_EDITOR=${ATHENA_INPUT_EDITOR:-N/A}
 
+echo " "
+
 if [ "$NEW_OUTPUT_FLAG" = "1" ]; then
-    echo "将创建新的output配置"
-    
-    # 创建空白的athinput.new文件
-    touch athinput.new
-    
     # 根据编辑模式处理
     if [ "$INPUT_EDITOR" = "nano" ]; then
-        echo "使用nano编辑器编辑athinput.new文件"
+        echo "启动nano编辑器中..."
         nano athinput.new
     elif [ "$INPUT_EDITOR" = "manual" ]; then
-        echo "请在编辑器中手动编辑athinput.new文件，完成后按回车继续"
-        read -p "按回车键继续..." continue
-    fi
-    
-    # 检查athinput.new是否为空
-    if [ ! -s athinput.new ]; then
-        echo "警告：athinput.new文件为空，将不使用新的output配置"
-        NEW_OUTPUT_FLAG=0
-        rm athinput.new
+        read -p "请手动编辑athinput.new文件，完成后按回车继续... " continue
+        echo " "
     fi
 fi
 
 # 预设作业名
 jobName=$USERNAME
-
 
 # 创建提交作业脚本 job.sh 
 # 注意，会覆盖之前的 job.sh 脚本
@@ -130,10 +119,14 @@ cat << EOF > job.sh
 
 EOF
 
-# 根据参数构建restart命令
+# 构建restart命令
 if [ "$NEW_OUTPUT_FLAG" = "1" ]; then
     # 使用新的output配置
-    echo "srun athena -r $RESTART_FILE -i athinput.new -d outputs -t $wallTimeLimit:00:00 $TLIM_PARAM" >> job.sh
+    if [ -n "$TLIM_PARAM" ]; then
+        echo "srun athena -r $RESTART_FILE -i athinput.new -d outputs -t $wallTimeLimit:00:00 $TLIM_PARAM" >> job.sh
+    else
+        echo "srun athena -r $RESTART_FILE -i athinput.new -d outputs -t $wallTimeLimit:00:00" >> job.sh
+    fi
 else
     # 不使用新的output配置
     if [ -n "$TLIM_PARAM" ]; then
@@ -162,7 +155,6 @@ done
 
 # 等待1秒钟，等文件多出现几行
 sleep 1
-
 
 # 打印提示语，退出后还可以继续监控
 echo " "
