@@ -252,7 +252,7 @@ def main(stdscr):
         elif editing_input_template:
             # 处理编辑input模板名称 - 重新修正光标位置
             # 直接硬编码光标位置，确保它出现在冒号后面
-            input_template_x = 61  # 经验值，确保光标位于冒号后
+            input_template_x = 32  # 经验值，确保光标位于冒号后
             stdscr.move(option_lines[5], input_template_x + len(inputTemplate))
             
             # 获取用户输入
