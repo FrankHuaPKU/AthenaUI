@@ -1,0 +1,3 @@
+[submodule "PyMRI"]
+	path = PyMRI
+	url = https://github.com/FrankHuaPKU/PyMRI.git
