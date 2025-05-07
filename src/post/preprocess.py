@@ -66,12 +66,61 @@ def get_qshear() -> Optional[float]:
             if found_section and 'qshear' in line:
                 # 提取qshear值
                 qshear = float(line.split('=')[1].split('#')[0].strip())
-                print(f"剪切参数: q = {qshear}\n", flush=True)
+                print(f"剪切参数: q = {qshear}", flush=True)
                 return qshear
                 
         print("错误: 在athinput文件中未找到qshear值", flush=True)
         return None
         
+    except Exception as e:
+        print(f"错误: 读取athinput文件时出错: {e}", flush=True)
+        return None
+
+def get_diffusivity() -> Tuple[float, float]:
+    """从athinput文件中提取磁扩散系数
+    
+    返回:
+        Tuple[float, float]: (nu_iso, eta_ohm) 粘性系数和磁扩散系数
+    """
+
+    # 获取当前路径
+    current_path = os.getcwd()
+    
+    # 查找athinput文件
+    athinput_pattern = os.path.join(current_path, 'athinput.*')
+    athinput_file = glob.glob(athinput_pattern)[0] # 只取第一个文件
+    
+    if not os.path.exists(athinput_file):
+        print("错误: 无法找到athinput文件", flush=True)
+        return None
+    
+    try:
+        # 读取athinput文件
+        with open(athinput_file, 'r') as f:
+            lines = f.readlines()
+            
+        # 查找<problem>部分
+        found_section = False
+        nu = None
+        eta = None
+        
+        for line in lines:
+            if '<problem>' in line:
+                found_section = True
+                continue
+            if found_section:
+                if 'nu_iso' in line:
+                    nu = float(line.split('=')[1].split('#')[0].strip())
+                elif 'eta_ohm' in line:
+                    eta = float(line.split('=')[1].split('#')[0].strip())
+                    
+        if nu is not None and eta is not None:
+            print(f"viscosity: nu = {nu}, resistivity: eta = {eta}\n", flush=True)
+            return nu, eta
+        else:
+            print("错误: 在athinput文件中未找到nu_iso或eta_ohm值", flush=True)
+            return None
+            
     except Exception as e:
         print(f"错误: 读取athinput文件时出错: {e}", flush=True)
         return None
@@ -141,6 +190,9 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
         
     # 获取剪切参量q
     q = get_qshear()
+
+    # 获取粘性系数和磁扩散系数
+    nu, eta = get_diffusivity()
         
     # 获取当前路径和case名
     current_path = os.getcwd()
@@ -215,7 +267,7 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
     
     # 构建并返回Turbulence对象
     try:
-        turbulence = Turbulence(case, rhos, Vs, Bs, times, q, 'isothermal')
+        turbulence = Turbulence(case, rhos, Vs, Bs, times, q, 'isothermal', nu, eta)
         return turbulence
     except Exception as e:
         print(f"错误: 构建Turbulence对象时出错: {e}", flush=True)
@@ -234,7 +286,9 @@ def test():
 
     turbulence = output2turbulence(outn, t1, t2)
 
-    print(f'q: {turbulence.q}\n')
+    print(f'q: {turbulence.q}')
+    print(f'nu: {turbulence.nu}')
+    print(f'eta: {turbulence.eta}\n')
     
     '''
     print(f'avgBys: {[f"{avg[1]:.3g}" for avg in turbulence.avgBs]}\n')
