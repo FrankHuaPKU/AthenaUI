@@ -183,7 +183,7 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
     返回:
         Optional[Turbulence]: Turbulence对象, 如果提取失败则返回None
     """
-    print("正在提取物理场数据...", flush=True)
+    print("\n正在提取物理场数据...", flush=True)
     
     # 获取box尺寸
     box = get_box(outn)

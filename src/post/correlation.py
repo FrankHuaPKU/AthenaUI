@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from scipy import signal
 import matplotlib.cm as cm
 
-# 添加Athena++路径
+# 导入athena_read库
 athena_path = os.environ.get('ATHENA_PATH', '')
 if athena_path:
     sys.path.insert(0, os.path.join(athena_path, 'vis/python'))
@@ -262,8 +262,9 @@ def plot_1d_slices(corr, t_start, t_end, case_name, var, Lx, Ly, Lz, Nx, Ny, Nz)
     # 保存图片
     plt.savefig(os.path.join(output_dir, f'{var}-1DSlices({t_start:.2f}-{t_end:.2f}).pdf'))
     plt.close()
+    
 
-def main():
+if __name__ == '__main__':
     # 解析命令行参数
     parser = argparse.ArgumentParser(description='计算两点空间自关联函数')
     parser.add_argument('--outn', type=str, required=True, help='输出文件格式，例如out2')
@@ -332,6 +333,3 @@ def main():
     plot_1d_slices(corr, t_start, t_end, case_name, args.var, Lx, Ly, Lz, Nx, Ny, Nz)
     
     print(f"计算完成！关联函数图已保存。", flush=True)
-
-if __name__ == '__main__':
-    main()
