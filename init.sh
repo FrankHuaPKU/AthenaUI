@@ -82,6 +82,9 @@ alias slc="python $ATHENAUI_DIR/src/tui/slc.py"
 # cor命令：计算两点空间自关联函数，调用cor.py
 alias cor="python $ATHENAUI_DIR/src/tui/cor.py"
 
+# spc命令：绘制能谱，调用spc.py
+alias spc="python $ATHENAUI_DIR/src/tui/spc.py"
+
 # 用户名命令：切换到对应用户目录
 if [ -n "$USERNAME" ]; then
     alias $USERNAME="cd $ATHENAUI_PATH"
@@ -92,10 +95,9 @@ fi
 cat << EOF
 
 Available commands:
-  run：启动新的模拟case（仅支持剪切盒）     mon：监控当前模拟case运行进度
-  rst：继续运行已有模拟case                 hst：绘制物理量随时间变化的曲线图
-  slc：绘制流场的切片图                     
-
+  run: 启动新的模拟case(仅支持剪切盒)     mon: 监控当前模拟case运行进度
+  rst: 继续运行已有模拟case               hst: 绘制物理量随时间变化的曲线图
+  slc: 绘制流场的切片图                   spc: 绘制能谱图
 EOF
 
 # cor：计算两点空间关联函数
