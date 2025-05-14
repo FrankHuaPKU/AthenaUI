@@ -27,8 +27,8 @@ def main():
         turbulence = preprocess.output2turbulence(args.outn, args.t1, args.t2)
         
         # 计算磁场能谱
-        print("正在计算磁场能谱...", flush=True)
-        spc = MagneticSpectra(turbulence)
+        print("正在计算能谱...", flush=True)
+        spc = EnergySpectra(turbulence)
         
         # 绘制能谱
         print("计算完成, 正在绘制能谱...", flush=True)
