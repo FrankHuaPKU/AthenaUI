@@ -52,18 +52,11 @@ def main(stdscr):
     # 参数默认值
     output_format_index = 0
     outn = output_formats[output_format_index] if output_formats else "out2"  # 输出文件格式
-    var = "B"  # 物理量默认为B
     t1 = ""    # 开始时间
     t2 = ""    # 结束时间
     
     # 当前选择的选项
     current_option = 0
-    
-    # 选项值列表（用于循环选择）
-    var_options = ["rho", "vel", "B"]
-    
-    # 当前索引（用于循环选择）
-    var_index = var_options.index(var)
     
     # 是否正在编辑某个字段
     editing_t1 = False
@@ -71,13 +64,13 @@ def main(stdscr):
     
     while True:
         # 如果当前选中t1且不是正在编辑模式，自动进入编辑模式
-        if current_option == 2 and not editing_t1:
+        if current_option == 1 and not editing_t1:
             editing_t1 = True
             curses.curs_set(1)  # 显示光标
             curses.echo()  # 开启回显
         
         # 如果当前选中t2且不是正在编辑模式，自动进入编辑模式
-        if current_option == 3 and not editing_t2:
+        if current_option == 2 and not editing_t2:
             editing_t2 = True
             curses.curs_set(1)  # 显示光标
             curses.echo()  # 开启回显
@@ -114,7 +107,6 @@ def main(stdscr):
         # 所有选项标签文本（供循环使用）
         option_labels = [
             "选择输出文件格式：",
-            "物理量：",
             "开始时间：",
             "结束时间：",
             "确认"
@@ -123,7 +115,6 @@ def main(stdscr):
         # 所有选项值（供循环使用）
         option_values = [
             outn,
-            var,
             t1,
             t2,
             ""  # "确认"没有值
@@ -135,7 +126,7 @@ def main(stdscr):
         
         for i in range(len(option_labels)):
             # 在"确认"按钮前添加一个空行
-            if i == 4:  # "确认"按钮的索引
+            if i == 3:  # "确认"按钮的索引
                 line_count += 1
             
             option_lines.append(line_count)
@@ -153,7 +144,7 @@ def main(stdscr):
                 prefix = "  "
             
             # 特殊处理编辑模式下的选项
-            if (i == 2 and editing_t1 and i == current_option) or (i == 3 and editing_t2 and i == current_option):
+            if (i == 1 and editing_t1 and i == current_option) or (i == 2 and editing_t2 and i == current_option):
                 # 显示前缀和标签（粗体绿色）
                 stdscr.attron(curses.A_BOLD)
                 stdscr.addstr(line, 2, prefix + option_labels[i])
@@ -209,8 +200,8 @@ def main(stdscr):
         if editing_t1:
             # 处理编辑开始时间
             # 计算光标位置，考虑中文字符宽度
-            cursor_x = 2 + calculate_display_width("> " + option_labels[2]) + len(t1)
-            stdscr.move(option_lines[2], cursor_x)  # 光标位置
+            cursor_x = 2 + calculate_display_width("> " + option_labels[1]) + len(t1)
+            stdscr.move(option_lines[1], cursor_x)  # 光标位置
             # 获取用户输入
             key = stdscr.getch()
             
@@ -220,7 +211,7 @@ def main(stdscr):
                 editing_t1 = False
                 curses.noecho()
                 curses.curs_set(0)
-                current_option = 3  # 自动移到下一个选项
+                current_option = 2  # 自动移到下一个选项
             elif key == 27:  # ESC键
                 # 取消编辑并退出
                 editing_t1 = False
@@ -241,9 +232,9 @@ def main(stdscr):
                 if len(t1) > 0:
                     t1 = t1[:-1]
                     # 清除当前行并重新显示
-                    stdscr.addstr(option_lines[2], 2, " " * (width - 4))  # 清空该行
+                    stdscr.addstr(option_lines[1], 2, " " * (width - 4))  # 清空该行
                     stdscr.attron(curses.color_pair(2) | curses.A_BOLD)
-                    stdscr.addstr(option_lines[2], 2, "> " + option_labels[2])
+                    stdscr.addstr(option_lines[1], 2, "> " + option_labels[1])
                     stdscr.attroff(curses.A_BOLD)
                     stdscr.attroff(curses.color_pair(2))
                     stdscr.attron(curses.color_pair(4))  # 使用白色显示输入文本
@@ -253,9 +244,9 @@ def main(stdscr):
                 # 添加字符到开始时间
                 t1 += chr(key)
                 # 更新显示（用白色显示整个输入内容）
-                stdscr.addstr(option_lines[2], 2, " " * (width - 4))  # 清空该行
+                stdscr.addstr(option_lines[1], 2, " " * (width - 4))  # 清空该行
                 stdscr.attron(curses.color_pair(2) | curses.A_BOLD)
-                stdscr.addstr(option_lines[2], 2, "> " + option_labels[2])
+                stdscr.addstr(option_lines[1], 2, "> " + option_labels[1])
                 stdscr.attroff(curses.A_BOLD)
                 stdscr.attroff(curses.color_pair(2))
                 stdscr.attron(curses.color_pair(4))  # 使用白色显示输入文本
@@ -264,8 +255,8 @@ def main(stdscr):
         elif editing_t2:
             # 处理编辑结束时间
             # 计算光标位置，考虑中文字符宽度
-            cursor_x = 2 + calculate_display_width("> " + option_labels[3]) + len(t2)
-            stdscr.move(option_lines[3], cursor_x)  # 光标位置
+            cursor_x = 2 + calculate_display_width("> " + option_labels[2]) + len(t2)
+            stdscr.move(option_lines[2], cursor_x)  # 光标位置
             # 获取用户输入
             key = stdscr.getch()
             
@@ -275,7 +266,7 @@ def main(stdscr):
                 editing_t2 = False
                 curses.noecho()
                 curses.curs_set(0)
-                current_option = 4  # 自动移到下一个选项
+                current_option = 3  # 自动移到下一个选项
             elif key == 27:  # ESC键
                 # 取消编辑并退出
                 editing_t2 = False
@@ -296,9 +287,9 @@ def main(stdscr):
                 if len(t2) > 0:
                     t2 = t2[:-1]
                     # 清除当前行并重新显示
-                    stdscr.addstr(option_lines[3], 2, " " * (width - 4))  # 清空该行
+                    stdscr.addstr(option_lines[2], 2, " " * (width - 4))  # 清空该行
                     stdscr.attron(curses.color_pair(2) | curses.A_BOLD)
-                    stdscr.addstr(option_lines[3], 2, "> " + option_labels[3])
+                    stdscr.addstr(option_lines[2], 2, "> " + option_labels[2])
                     stdscr.attroff(curses.A_BOLD)
                     stdscr.attroff(curses.color_pair(2))
                     stdscr.attron(curses.color_pair(4))  # 使用白色显示输入文本
@@ -308,9 +299,9 @@ def main(stdscr):
                 # 添加字符到结束时间
                 t2 += chr(key)
                 # 更新显示（用白色显示整个输入内容）
-                stdscr.addstr(option_lines[3], 2, " " * (width - 4))  # 清空该行
+                stdscr.addstr(option_lines[2], 2, " " * (width - 4))  # 清空该行
                 stdscr.attron(curses.color_pair(2) | curses.A_BOLD)
-                stdscr.addstr(option_lines[3], 2, "> " + option_labels[3])
+                stdscr.addstr(option_lines[2], 2, "> " + option_labels[2])
                 stdscr.attroff(curses.A_BOLD)
                 stdscr.attroff(curses.color_pair(2))
                 stdscr.attron(curses.color_pair(4))  # 使用白色显示输入文本
@@ -330,25 +321,19 @@ def main(stdscr):
                     if output_formats:
                         output_format_index = (output_format_index - 1) % len(output_formats)
                         outn = output_formats[output_format_index]
-                elif current_option == 1:  # 物理量
-                    var_index = (var_index - 1) % len(var_options)
-                    var = var_options[var_index]
             elif key == curses.KEY_RIGHT:
                 if current_option == 0:  # 输出文件格式
                     if output_formats:
                         output_format_index = (output_format_index + 1) % len(output_formats)
                         outn = output_formats[output_format_index]
-                elif current_option == 1:  # 物理量
-                    var_index = (var_index + 1) % len(var_options)
-                    var = var_options[var_index]
             elif key == 10:  # 回车键
-                if current_option == 2:  # 开始时间
+                if current_option == 1:  # 开始时间
                     # 进入编辑模式（这里不做任何操作，因为下次循环开始时会自动进入编辑模式）
                     pass
-                elif current_option == 3:  # 结束时间
+                elif current_option == 2:  # 结束时间
                     # 进入编辑模式（这里不做任何操作，因为下次循环开始时会自动进入编辑模式）
                     pass
-                elif current_option == 4:  # 确认按钮
+                elif current_option == 3:  # 确认按钮
                     # 启动计算
                     break
             elif key == 27:  # ESC键
@@ -366,7 +351,7 @@ def main(stdscr):
         return
     
     # 构建命令行参数
-    cmd_args = f"--outn={outn} --var={var}"
+    cmd_args = f"--outn={outn}"
     
     # 添加时间区间参数
     if t1:
