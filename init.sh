@@ -98,6 +98,7 @@ Available commands:
   run: 启动新的模拟case(仅支持剪切盒)     mon: 监控当前模拟case运行进度
   rst: 继续运行已有模拟case               hst: 绘制物理量随时间变化的曲线图
   slc: 绘制流场的切片图                   spc: 绘制能谱图
+  cor: 计算两点空间关联函数
 EOF
 
 # cor：计算两点空间关联函数
