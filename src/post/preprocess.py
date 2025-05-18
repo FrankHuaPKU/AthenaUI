@@ -46,7 +46,13 @@ def get_qshear() -> Optional[float]:
     
     # 查找athinput文件
     athinput_pattern = os.path.join(current_path, 'athinput.*')
-    athinput_file = glob.glob(athinput_pattern)[0] # 只取第一个文件
+    athinput_files = [f for f in glob.glob(athinput_pattern) if not f.endswith('.new')]
+    
+    if not athinput_files:
+        print("错误: 无法找到athinput文件", flush=True)
+        return None
+        
+    athinput_file = athinput_files[0]  # 只取第一个文件
     
     if not os.path.exists(athinput_file):
         print("错误: 无法找到athinput文件", flush=True)
@@ -88,7 +94,13 @@ def get_diffusivity() -> Tuple[float, float]:
     
     # 查找athinput文件
     athinput_pattern = os.path.join(current_path, 'athinput.*')
-    athinput_file = glob.glob(athinput_pattern)[0] # 只取第一个文件
+    athinput_files = [f for f in glob.glob(athinput_pattern) if not f.endswith('.new')]
+    
+    if not athinput_files:
+        print("错误: 无法找到athinput文件", flush=True)
+        return None
+        
+    athinput_file = athinput_files[0]  # 只取第一个文件
     
     if not os.path.exists(athinput_file):
         print("错误: 无法找到athinput文件", flush=True)
