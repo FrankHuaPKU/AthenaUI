@@ -195,7 +195,7 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
     返回:
         Optional[Turbulence]: Turbulence对象, 如果提取失败则返回None
     """
-    print("\n正在提取物理场数据...", flush=True)
+    print("\n正在提取基本参数...", flush=True)
     
     # 获取box尺寸
     box = get_box(outn)
@@ -205,6 +205,8 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
 
     # 获取粘性系数和磁扩散系数
     nu, eta = get_diffusivity()
+
+    print("正在提取目标数据...", flush=True)
         
     # 获取当前路径和case名
     current_path = os.getcwd()
