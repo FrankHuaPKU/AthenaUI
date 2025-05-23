@@ -33,6 +33,53 @@ else:
 # 导入PyMRI库中的数据类型
 from pymri import ScalarField, VectorField, Turbulence
 
+def get_Omega() -> Optional[float]:
+    """从athinput文件中提取Omega值
+    
+    返回:
+        Optional[float]: Omega值, 如果提取失败则返回None
+    """
+    
+    # 获取当前路径
+    current_path = os.getcwd()
+    
+    # 查找athinput文件
+    athinput_pattern = os.path.join(current_path, 'athinput.*')
+    athinput_files = [f for f in glob.glob(athinput_pattern) if not f.endswith('.new')]
+    
+    if not athinput_files:
+        print("错误: 无法找到athinput文件", flush=True)
+        return None
+        
+    athinput_file = athinput_files[0]  # 只取第一个文件
+    
+    if not os.path.exists(athinput_file):
+        print("错误: 无法找到athinput文件", flush=True)
+        return None
+    
+    try:
+        # 读取athinput文件
+        with open(athinput_file, 'r') as f:
+            lines = f.readlines()
+            
+        # 查找<orbital_advection>部分
+        found_section = False
+        for line in lines:
+            if '<orbital_advection>' in line:
+                found_section = True
+                continue
+            if found_section and 'Omega0' in line:
+                # 提取Omega0值
+                Omega0 = float(line.split('=')[1].split('#')[0].strip())
+                print(f"角速度: Omega = {Omega0}", flush=True)
+                return Omega0
+                
+        print("错误: 在athinput文件中未找到Omega0值", flush=True)
+        return None
+        
+    except Exception as e:
+        print(f"错误: 读取athinput文件时出错: {e}", flush=True)
+        return None
 
 def get_qshear() -> Optional[float]:
     """从athinput文件中提取qshear值
@@ -200,6 +247,9 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
     # 获取box尺寸
     box = get_box(outn)
         
+    # 获取角速度
+    Omega = get_Omega()
+    
     # 获取剪切参量q
     q = get_qshear()
 
@@ -281,7 +331,7 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
     
     # 构建并返回Turbulence对象
     try:
-        turbulence = Turbulence(case, rhos, Vs, Bs, times, q, 'isothermal', nu, eta)
+        turbulence = Turbulence(case, rhos, Vs, Bs, times, Omega, q, 'isothermal', nu, eta)
         return turbulence
     except Exception as e:
         print(f"错误: 构建Turbulence对象时出错: {e}", flush=True)
@@ -300,6 +350,7 @@ def test():
 
     turbulence = output2turbulence(outn, t1, t2)
 
+    print(f'Omega: {turbulence.Omega}')
     print(f'q: {turbulence.q}')
     print(f'nu: {turbulence.nu}')
     print(f'eta: {turbulence.eta}\n')
