@@ -32,8 +32,9 @@ else:
 
 # 导入PyMRI库中的数据类型
 from pymri import ScalarField, VectorField, Turbulence
+from pymri.turbulence import avg
 
-def get_Omega() -> Optional[float]:
+def getOmega() -> Optional[float]:
     """从athinput文件中提取Omega值
     
     返回:
@@ -81,7 +82,55 @@ def get_Omega() -> Optional[float]:
         print(f"错误: 读取athinput文件时出错: {e}", flush=True)
         return None
 
-def get_qshear() -> Optional[float]:
+def getCs() -> Optional[float]:
+    """从athinput文件中提取声速值
+    
+    返回:
+        Optional[float]: 声速值, 如果提取失败则返回None
+    """
+    
+    # 获取当前路径
+    current_path = os.getcwd()
+    
+    # 查找athinput文件
+    athinput_pattern = os.path.join(current_path, 'athinput.*')
+    athinput_files = [f for f in glob.glob(athinput_pattern) if not f.endswith('.new')]
+    
+    if not athinput_files:
+        print("错误: 无法找到athinput文件", flush=True)
+        return None
+        
+    athinput_file = athinput_files[0]  # 只取第一个文件
+    
+    if not os.path.exists(athinput_file):
+        print("错误: 无法找到athinput文件", flush=True)
+        return None
+    
+    try:
+        # 读取athinput文件
+        with open(athinput_file, 'r') as f:
+            lines = f.readlines()
+            
+        # 查找<hydro>部分
+        found_section = False
+        for line in lines:
+            if '<hydro>' in line:
+                found_section = True
+                continue
+            if found_section and 'iso_sound_speed' in line:
+                # 提取iso_sound_speed值
+                cs = float(line.split('=')[1].split('#')[0].strip())
+                print(f"声速: cs = {cs}", flush=True)
+                return cs
+                
+        print("错误: 在athinput文件中未找到iso_sound_speed值", flush=True)
+        return None
+        
+    except Exception as e:
+        print(f"错误: 读取athinput文件时出错: {e}", flush=True)
+        return None
+
+def getShear() -> Optional[float]:
     """从athinput文件中提取qshear值
     
     返回:
@@ -129,7 +178,7 @@ def get_qshear() -> Optional[float]:
         print(f"错误: 读取athinput文件时出错: {e}", flush=True)
         return None
 
-def get_diffusivity() -> Tuple[float, float]:
+def getDiffusivity() -> Tuple[float, float]:
     """从athinput文件中提取磁扩散系数
     
     返回:
@@ -184,7 +233,7 @@ def get_diffusivity() -> Tuple[float, float]:
         print(f"错误: 读取athinput文件时出错: {e}", flush=True)
         return None
 
-def get_box(outn: str) -> Optional[List[float]]:
+def getBox(outn: str) -> Optional[List[float]]:
     """提取模拟box的尺寸信息
     
     参数:
@@ -245,16 +294,19 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
     print("\n正在提取基本参数...", flush=True)
     
     # 获取box尺寸
-    box = get_box(outn)
+    box = getBox(outn)
         
     # 获取角速度
-    Omega = get_Omega()
+    Omega = getOmega()
+    
+    # 获取声速
+    Cs = getCs()
     
     # 获取剪切参量q
-    q = get_qshear()
+    q = getShear()
 
     # 获取粘性系数和磁扩散系数
-    nu, eta = get_diffusivity()
+    nu, eta = getDiffusivity()
 
     print("正在提取目标数据...", flush=True)
         
@@ -331,7 +383,18 @@ def output2turbulence(outn: str, t1: float, t2: Optional[float] = None) -> Optio
     
     # 构建并返回Turbulence对象
     try:
-        turbulence = Turbulence(case, rhos, Vs, Bs, times, Omega, q, 'isothermal', nu, eta)
+        turbulence = Turbulence(case  = case, 
+                                rhos  = rhos, 
+                                ps    = None, 
+                                Vs    = Vs, 
+                                Bs    = Bs, 
+                                times = times, 
+                                Omega = Omega, 
+                                q     = q, 
+                                EoS   = 'isothermal', 
+                                Cs    = Cs, 
+                                nu    = nu, 
+                                eta   = eta)
         return turbulence
     except Exception as e:
         print(f"错误: 构建Turbulence对象时出错: {e}", flush=True)
@@ -349,24 +412,22 @@ def test():
     t2 = 100
 
     turbulence = output2turbulence(outn, t1, t2)
-
+    
     print(f'Omega: {turbulence.Omega}')
     print(f'q: {turbulence.q}')
     print(f'nu: {turbulence.nu}')
     print(f'eta: {turbulence.eta}\n')
+
+    # 计算密度场的平均值
+    avgRho: ScalarField = avg(turbulence.rhos)
+    print(f'avgRho: {np.mean(avgRho.data)}\n')
     
-    '''
-    print(f'avgBys: {[f"{avg[1]:.3g}" for avg in turbulence.avgBs]}\n')
+    # 计算压强场的平均值
+    avgP: ScalarField = avg(turbulence.ps)
+    print(f'avgP: {np.mean(avgP.data)}\n')
 
-    print(f'KEs: {[f"{x:.3g}" for x in turbulence.KEs]}\n')
-
-    print(f'MEs: {[f"{x:.3g}" for x in turbulence.MEs]}\n')
-
-    print(f'density fluctuations: {[f"{x:.3g}" for x in turbulence.density_fluctuations]}\n')
-    '''
-
+    # 计算磁场 y 分量的平均值
     avgBys = [avg[1] for avg in turbulence.avgBs]
-
     print(f'avgBy: {np.mean(avgBys)} ± {np.std(avgBys)}\n')
 
     print(f'KE: {np.mean(turbulence.KEs)} ± {np.std(turbulence.KEs)}\n')
